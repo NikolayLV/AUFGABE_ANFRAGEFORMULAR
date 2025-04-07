@@ -201,7 +201,7 @@
 				?>
 			</div>
 			<div class="input_section">
-				<p class="form_bodytext">Straße *</p>
+				<p class="form_bodytext thin">Straße *</p>
 				<?php
 					echo $this->getTextInput($id = 'strasse', $name = 'Strasse');
 					echo $this->getTooltip($id = 'strasse', $tooltipText = 'Gegeben Sie eine gültige Straße ein.');

@@ -10,8 +10,8 @@
 </head>
 <body>
 <?php
-
-	echo $this->content; ?>
+	echo $this->content;
+?>
 <script src="<?= PATH ?>/assets/js/main.js"></script>
 </body>
 
