@@ -297,7 +297,7 @@ h1, h2, h3, li, ul, a {
     .request_form .request_form_container .children_block .input_section .default_input,
     .request_form .request_form_container .contact_block .input_section .default_input {
         margin: 4px;
-        padding-left: 0;
+        padding-left: 6px;
         height: 40px;
     }
 
