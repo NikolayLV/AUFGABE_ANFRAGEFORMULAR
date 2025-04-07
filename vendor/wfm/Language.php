@@ -6,11 +6,8 @@ namespace wfm;
 
 class Language
 {
-    // массив со всеми переводными фразами страницы
     public static array $lang_data = [];
-    // массив с переводными фразами шаблона
     public static array $lang_layout = [];
-    // массив с переводными фразами вида
     public static array $lang_view = [];
 
     public static function load($code, $view)

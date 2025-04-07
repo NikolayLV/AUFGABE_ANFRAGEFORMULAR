@@ -9,8 +9,8 @@ define("HELPERS", ROOT . '/vendor/wfm/helpers');
 define("CACHE", ROOT . '/tmp/cache');
 define("LOGS", ROOT . '/tmp/logs');
 define("CONFIG", ROOT . '/config');
-define("LAYOUT", 'cv');
-define("PATH", 'https://nikolaylv.com');
+define("LAYOUT", 'neuberger');
+define("PATH", 'https://neuberger.sho');
 define("NO_IMAGE", '/uploads/no_image.jpg');
 
 date_default_timezone_set('Europe/Vienna');

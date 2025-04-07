@@ -3,7 +3,6 @@
 
 	namespace app\models;
 
-	use RedBeanPHP\R;
 	use wfm\Model;
 
 	class AppModel extends Model
@@ -25,13 +24,9 @@
 
 		public static function str2url($str): string
 		{
-			// переводим в транслит
 			$str = self::rus2translit($str);
-			// в нижний регистр
 			$str = strtolower($str);
-			// заменям все ненужное нам на "-"
 			$str = preg_replace('~[^-a-z0-9]+~u', '-', $str);
-			// удаляем начальные и конечные '-'
 			$str = trim($str, "-");
 			return $str;
 		}

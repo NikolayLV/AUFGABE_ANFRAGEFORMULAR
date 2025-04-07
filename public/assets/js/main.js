@@ -1,276 +1,178 @@
-$(function() {
+/**
+ * Handles form validation, tooltips, and dynamic child input fields for the Anfrageformular.
+ */
+document.addEventListener('DOMContentLoaded', function () {
+	const form = document.getElementById('anfrageForm');
+	const errorBlock = document.querySelector('.error_block');
+	const tooltips = form.querySelectorAll('.tooltip');
 
-	// CART
+	form.setAttribute('novalidate', 'true');
 
-	function showCart(cart) {
-		$('#cart-modal .modal-cart-content').html(cart);
-		const myModalEl = document.querySelector('#cart-modal');
-		const modal = bootstrap.Modal.getOrCreateInstance(myModalEl);
-		modal.show();
+	form.addEventListener('submit', function (e) {
+		e.preventDefault();
 
-		if ($('.cart-qty').text()) {
-			$('.count-items').text($('.cart-qty').text());
+		const fields = form.querySelectorAll('[required]');
+		let formIsValid = true;
+		let firstInvalidField = null;
+
+		fields.forEach(field => {
+			field.addEventListener('input', () => {
+				if (field.checkValidity()) {
+					field.classList.remove('invalid');
+					let tooltipId = `tooltip_${field.id}`;
+					let tooltip = document.getElementById(`${tooltipId}`);
+					tooltip.style.opacity = '0';
+				}
+			});
+		});
+
+		fields.forEach(field => {
+			field.classList.remove('invalid');
+
+			if (!field.value && field.required) {
+				formIsValid = false;
+				field.classList.add('invalid');
+				let tooltipId = `tooltip_${field.id}`;
+				let tooltip = document.getElementById(`${tooltipId}`);
+				field.addEventListener('mouseover', () => {
+					if (tooltip && !field.value) {
+						tooltip.style.opacity = '1';
+					}
+				});
+
+				field.addEventListener('mouseout', () => {
+					if (tooltip && !field.value) {
+						tooltip.style.opacity = '0';
+					}
+				});
+
+				if (!firstInvalidField) {
+					firstInvalidField = field;
+				}
+			}
+
+		});
+
+		if (!formIsValid) {
+			errorBlock.style.display = 'block';
+
+			if (firstInvalidField) {
+				firstInvalidField.reportValidity();
+				firstInvalidField.focus();
+			}
+
+			scrollToError();
 		} else {
-			$('.count-items').text('0');
+			errorBlock.style.display = 'none';
+			form.submit();
+		}
+
+	});
+
+	/**
+	 * Smoothly scrolls to the first invalid field in the form.
+	 *
+	 * @return {void}
+	 */
+	function scrollToError() {
+		const firstInvalid = form.querySelector('.invalid');
+		if (firstInvalid) {
+			window.scrollTo({
+				top: firstInvalid.offsetTop - 100,
+				behavior: 'smooth'
+			});
 		}
 	}
-
-	$('#get-cart').on('click', function (e) {
-		e.preventDefault();
-		$.ajax({
-			url: 'cart/show',
-			type: 'GET',
-			success: function (res) {
-				showCart(res);
-			},
-			error: function () {
-				alert('Error!');
-			}
-		});
-	});
-
-	$('#cart-modal .modal-cart-content').on('click', '.del-item', function (e) {
-		e.preventDefault();
-		const id = $(this).data('id');
-		$.ajax({
-			url: 'cart/delete',
-			type: 'GET',
-			data: {id: id},
-			success: function (res) {
-				const url = window.location.toString();
-				if (url.indexOf('cart/view') !== -1) {
-					window.location = url;
-				} else {
-					showCart(res);
-				}
-			},
-			error: function () {
-				alert('Error!');
-			}
-		});
-	});
-
-	$('#cart-modal .modal-cart-content').on('click', '#clear-cart', function () {
-		$.ajax({
-			url: 'cart/clear',
-			type: 'GET',
-			success: function (res) {
-				showCart(res);
-			},
-			error: function () {
-				alert('Error!');
-			}
-		});
-	});
-
-	$('.add-to-cart').on('click', function (e) {
-		e.preventDefault();
-		const id = $(this).data('id');
-		const qty = $('#input-quantity').val() ? $('#input-quantity').val() : 1;
-		const $this = $(this);
-
-		$.ajax({
-			url: 'cart/add',
-			type: 'GET',
-			data: {id: id, qty: qty},
-			success: function (res) {
-				showCart(res);
-				$this.find('i').removeClass('fa-shopping-cart').addClass('fa-luggage-cart');
-			},
-			error: function () {
-				alert('Error!');
-			}
-		});
-	});
-
-	// CART
-
-	$('#input-sort').on('change', function () {
-		window.location = PATH + window.location.pathname + '?' + $(this).val();
-	});
-
-	$('.open-search').click(function(e) {
-		e.preventDefault();
-		$('#search').addClass('active');
-	});
-	$('.close-search').click(function() {
-		$('#search').removeClass('active');
-	});
-
-	$(window).scroll(function() {
-		if ($(this).scrollTop() > 200) {
-			$('#top').fadeIn();
-		} else {
-			$('#top').fadeOut();
-		}
-	});
-
-	$('#top').click(function() {
-		$('body, html').animate({scrollTop:0}, 700);
-	});
-
-	$('.sidebar-toggler .btn').click(function() {
-		$('.sidebar-toggle').slideToggle();
-	});
-
-	$('.thumbnails').magnificPopup({
-		type:'image',
-		delegate: 'a',
-		gallery: {
-			enabled: true
-		},
-		removalDelay: 500,
-		callbacks: {
-			beforeOpen: function() {
-				this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
-				this.st.mainClass = this.st.el.attr('data-effect');
-			}
-		}
-	});
-
-	$('#languages button').on('click', function () {
-		const lang_code = $(this).data('langcode');
-		window.location = PATH + '/language/change?lang=' + lang_code;
-	});
-
-	$('.product-card').on('click', '.add-to-wishlist', function (e) {
-		e.preventDefault();
-		const id = $(this).data('id');
-		const $this = $(this);
-		$.ajax({
-			url: 'wishlist/add',
-			type: 'GET',
-			data: {id: id},
-			success: function (res) {
-				res = JSON.parse(res);
-				Swal.fire(
-					res.text,
-					'',
-					res.result
-				);
-				if (res.result == 'success') {
-					$this.removeClass('add-to-wishlist').addClass('delete-from-wishlist');
-					$this.find('i').removeClass('far fa-heart').addClass('fas fa-hand-holding-heart');
-				}
-			},
-			error: function () {
-				alert('Error!');
-			}
-		});
-	});
-
-	$('.product-card').on('click', '.delete-from-wishlist', function (e) {
-		e.preventDefault();
-		const id = $(this).data('id');
-		const $this = $(this);
-		$.ajax({
-			url: 'wishlist/delete',
-			type: 'GET',
-			data: {id: id},
-			success: function (res) {
-				const url = window.location.toString();
-				if (url.indexOf('wishlist') !== -1) {
-					window.location = url;
-				} else {
-					res = JSON.parse(res);
-					Swal.fire(
-						res.text,
-						'',
-						res.result
-					);
-					if (res.result == 'success') {
-						$this.removeClass('delete-from-wishlist').addClass('add-to-wishlist');
-						$this.find('i').removeClass('fas fa-hand-holding-heart').addClass('far fa-heart');
-					}
-				}
-			},
-			error: function () {
-				alert('Error!');
-			}
-		});
-	});
-
 });
 
 
-if (typeof showModal !== 'undefined' && showModal) {
-	document.getElementById('modal').classList.add('open');
+let childIndex = 1;
+
+/**
+ * Adds child fields for Kinder form
+ *
+ * @return {void}
+ */
+function addChildFields() {
+	const container = document.getElementById('children_container');
+
+	const childHTML = `
+		<div class="input_section">
+			<p class="form_bodytext">Name des Kindes *</p>
+			<input type="text"
+				   name="name_kindes_${childIndex}"
+				   id="name_kindes_${childIndex}"
+				   class="default_input"
+				   required
+				   maxlength="50">
+			<span class="tooltip" id="tooltip_name_kindes_${childIndex}" style="opacity: 0;">Gegeben Sie einen gültigen Namen ein.</span>
+		</div>
+
+		<div class="input_section">
+			<p class="form_bodytext">Geburtstag *</p>
+			<div class="birthday_block">
+				<select name="child_day_${childIndex}" class="birthday_input" required>
+					<option value="" disabled selected>Tag</option>
+					${generateOptions(1, 31)}
+				</select>
+				<select name="child_month_${childIndex}" class="birthday_input" required>
+					<option value="" disabled selected>Monat</option>
+					${generateMonthOptions()}
+				</select>
+				<select name="child_year_${childIndex}" class="birthday_input" required>
+					<option value="" disabled selected>Jahr</option>
+					${generateOptions(new Date().getFullYear(), 1900)}
+				</select>
+			</div>
+		</div>
+	`;
+
+	container.insertAdjacentHTML('beforeend', childHTML);
+	childIndex++;
 }
 
-function chooseStyle() {
-	document.getElementById('modal').classList.add('open');
+/**
+ * Removes child fields of Kinder form
+ *
+ * @return {void}
+ */
+function removeChildFields() {
+	const container = document.getElementById('children_container');
+	const children = container.querySelectorAll('.input_section');
+
+	if (children.length < 2) return;
+
+	container.removeChild(children[children.length - 1]);
+	container.removeChild(children[children.length - 2]);
+
+	childIndex = Math.max(0, childIndex - 1);
 }
 
-function closePopup() {
-	document.getElementById('modal').classList.remove('open');
-}
-
-function sendContacts() {
-	let inputName = document.getElementById('name').value;
-	let inputEmail = document.getElementById('email').value;
-	let inputPhone = document.getElementById('phone').value;
-	let inputText = document.getElementById('text').value;
-
-	switch (true) {
-		case !inputName:
-			alert('Fill in the name field!');
-			break;
-		case !inputEmail:
-			alert('Fill in the email field!');
-			break;
-		case !inputPhone:
-			alert('Fill in the phone field!');
-			break;
-		case !inputText:
-			alert('Fill in the message field!');
-			break;
-		case inputName && inputEmail && inputText:
-			alert('The message was sent successfully!');
-			break;
+/**
+ * Generates days for option at Dropdown List
+ *
+ * @param {string} start The starting day (e.g., 1).
+ * @param {string} end The ending day (e.g., 31).
+ * @return {string}
+ */
+function generateOptions(start, end) {
+	let html = '';
+	const step = start < end ? 1 : -1;
+	for (let i = start; step > 0 ? i <= end : i >= end; i += step) {
+		html += `<option value="${i}">${i}</option>`;
 	}
-
+	return html;
 }
 
-function downloadCV() {
-		let filePath = '/public/assets/CV.pdf';
-
-		// Создаем новый XMLHttpRequest объект
-		let xhr = new XMLHttpRequest();
-
-		// Открываем запрос на получение файла
-		xhr.open('GET', filePath, true);
-
-		// Устанавливаем responseType в "blob"
-		xhr.responseType = 'blob';
-
-		// Обработка успешного завершения запроса
-		xhr.onload = function() {
-			if (xhr.status === 200) {
-				// Создаем Blob из полученных данных
-				var blob = new Blob([xhr.response], { type: 'application/octet-stream' });
-
-				// Создаем временную ссылку на Blob
-				var url = window.URL.createObjectURL(blob);
-
-				// Создаем ссылку для скачивания
-				var a = document.createElement('a');
-				a.href = url;
-				a.download = filePath.substring(filePath.lastIndexOf('/') + 1);
-
-				// Добавляем ссылку на документ
-				document.body.appendChild(a);
-
-				// Запускаем скачивание
-				a.click();
-
-				// Удаляем ссылку из документа
-				document.body.removeChild(a);
-
-				// Очищаем URL объекта
-				window.URL.revokeObjectURL(url);
-			}
-		};
-
-		// Отправляем запрос
-		xhr.send();
-	};
+/**
+ * Generates months for Option
+ *
+ * @return {string}
+ */
+function generateMonthOptions() {
+	const months = [
+		'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+		'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+	];
+	return months.map((name, index) => `<option value="${index + 1}">${name}</option>`).join('');
+}

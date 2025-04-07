@@ -4,7 +4,6 @@
 namespace wfm;
 
 
-use RedBeanPHP\R;
 use Valitron\Validator;
 
 abstract class Model
@@ -14,11 +13,6 @@ abstract class Model
     public array $errors = [];
     public array $rules = [];
     public array $labels = [];
-
-    public function __construct()
-    {
-        Db::getInstance();
-    }
 
     public function load($post = true)
     {
