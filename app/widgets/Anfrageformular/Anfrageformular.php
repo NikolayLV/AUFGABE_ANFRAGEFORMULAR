@@ -138,7 +138,7 @@
 				return strcmp($a['name'], $b['name']);
 			});
 
-			$html = '<select name="Landes" id="land" class="default_input" required>';
+			$html = '<select name="Landes" id="land" class="default_input icon-arrow" required>';
 			$html .= '<option value="" disabled selected>Auswählen</option>';
 			foreach ($priorityCountries as $country) {
 				$html .= '<option value="' . htmlspecialchars($country['code']) . '">' . htmlspecialchars($country['name']) . '</option>';

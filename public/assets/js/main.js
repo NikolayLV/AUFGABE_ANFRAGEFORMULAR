@@ -102,7 +102,7 @@ function addChildFields() {
 			<input type="text"
 				   name="name_kindes_${childIndex}"
 				   id="name_kindes_${childIndex}"
-				   class="default_input"
+				   class="default_input icon-arrow"
 				   required
 				   maxlength="50">
 			<span class="tooltip" id="tooltip_name_kindes_${childIndex}" style="opacity: 0;">Gegeben Sie einen gültigen Namen ein.</span>

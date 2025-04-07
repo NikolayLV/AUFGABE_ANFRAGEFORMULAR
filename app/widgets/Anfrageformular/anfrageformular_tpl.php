@@ -4,25 +4,27 @@
 			<h1 class="form_headline">Ihre Urlaubsdaten</h1>
 
 			<div class="flatpickr input_section">
-				<p class="form_bodytext">Reisezeitraum *</p>
+				<p class="form_bodytext thin">Reisezeitraum *</p>
 				<?php
 					echo $this->getInput([
 						'type' => 'number',
 						'name' => 'Reisezeitraum',
 						'id' => 'reisezeitraum',
-						'class' => 'default_input',
+						'class' => 'default_input icon-calendar',
 						'required' => true,
 						'maxlength' => 50
 					]);
 					echo $this->getTooltip($id = 'reisezeitraum', $tooltipText = 'Gegeben Sie einen Reisedatum ein.');
 				?>
-				<a class="input-button" title="toggle" data-toggle>
-					<i class="icon-calendar"></i>
-				</a>
 				<script>
+					/**
+					 * For the mobile version - a single calendar, for the desktop version - a double calendar.
+					 */
+					const showMonths = window.innerWidth < 768 ? 1 : 2;
+
 					flatpickr("#reisezeitraum", {
 						mode: "range",
-						showMonths: 2,
+						showMonths: showMonths,
 						dateFormat: "d. M Y",
 						locale: {
 							firstDayOfWeek: 1,
@@ -77,7 +79,7 @@
 							$attributes = [
 								'id' => 'birthday_input',
 								'name' => 'Geburtstag',
-								'class' => 'birthday_input',
+								'class' => 'birthday_input icon-arrow',
 								'required' => true,
 							];
 
@@ -86,7 +88,7 @@
 							$attributes = [
 								'id' => 'birthday_input',
 								'name' => 'Geburtstag',
-								'class' => 'birthday_input',
+								'class' => 'birthday_input icon-arrow',
 								'required' => true,
 							];
 
@@ -95,7 +97,7 @@
 							$attributes = [
 								'id' => 'birthday_input',
 								'name' => 'Geburtstag',
-								'class' => 'birthday_input',
+								'class' => 'birthday_input icon-arrow',
 								'required' => true,
 							];
 
@@ -141,7 +143,7 @@
 					$attributes = [
 						'id' => 'geschlecht',
 						'name' => 'Geschlecht',
-						'class' => 'default_input',
+						'class' => 'default_input icon-arrow',
 						'required' => true,
 					];
 
@@ -206,7 +208,7 @@
 				?>
 			</div>
 			<div class="input_section">
-				<p class="form_bodytext">Telefon </p>
+				<p class="form_bodytext thin">Telefon </p>
 				<?php
 					echo $this->getInput([
 						'type' => 'tel',
@@ -220,7 +222,7 @@
 				?>
 			</div>
 			<div class="input_section">
-				<p class="form_bodytext">Fragen oder Wünsche </p>
+				<p class="form_bodytext thin">Fragen oder Wünsche </p>
 				<textarea class="default_textarea" id="fragen" name="Fragen oder Wünsche" rows="5"
 						  maxlength="1000"></textarea>
 			</div>
